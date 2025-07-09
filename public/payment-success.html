@@ -73,12 +73,17 @@
     <script>
         // Obtener parámetros de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        const payment_id = urlParams.get('payment_id');
-        const status = urlParams.get('status');
-        const preference_id = urlParams.get('preference_id');
+        let payment_id = urlParams.get('payment_id');
+        let status = urlParams.get('status');
+        let preference_id = urlParams.get('preference_id');
+        
+        // Si no hay parámetros, usar valores de prueba
+        if (!payment_id) payment_id = 'test_payment_123456';
+        if (!status) status = 'success';
+        if (!preference_id) preference_id = 'test_preference_789';
         
         // Construir el deep link
-        const deepLink = `carica://payment/success?payment_id=${payment_id || ''}&status=${status || ''}&preference_id=${preference_id || ''}`;
+        const deepLink = `carica://payment/success?payment_id=${payment_id}&status=${status}&preference_id=${preference_id}`;
         
         // Intentar abrir la app inmediatamente
         window.location.href = deepLink;
