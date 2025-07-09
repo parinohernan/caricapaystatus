@@ -15,4 +15,14 @@
 [[redirects]]
   from = "/payment/pending"
   to = "/.netlify/functions/payment-pending"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/.netlify/functions/login"
+  status = 200
+
+[[redirects]]
+  from = "/test-deeplink"
+  to = "/test-deeplink.html"
   status = 200 

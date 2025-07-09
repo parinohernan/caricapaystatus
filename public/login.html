@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago Fallido - Carica</title>
+    <title>Login - Carica</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px 20px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             margin: 0;
             min-height: 100vh;
@@ -47,7 +47,7 @@
         }
         .btn {
             background: white;
-            color: #ff6b6b;
+            color: #667eea;
             padding: 12px 24px;
             border: none;
             border-radius: 25px;
@@ -60,7 +60,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Pago Fallido</h1>
+        <h1>Iniciar Sesión</h1>
         <p>Redirigiendo a la aplicación...</p>
         <div class="spinner"></div>
         
@@ -77,25 +77,23 @@
             console.log(`[${timestamp}] ${message}`, data || '');
         }
 
-        log('Página de fallo cargada');
+        log('Página de login cargada');
 
         // Obtener parámetros de la URL
         const urlParams = new URLSearchParams(window.location.search);
-        let payment_id = urlParams.get('payment_id');
-        let status = urlParams.get('status');
-        let preference_id = urlParams.get('preference_id');
+        let redirect_uri = urlParams.get('redirect_uri');
+        let source = urlParams.get('source');
         
-        log('Parámetros originales:', { payment_id, status, preference_id });
+        log('Parámetros originales:', { redirect_uri, source });
         
         // Si no hay parámetros, usar valores de prueba
-        if (!payment_id) payment_id = 'test_payment_123456';
-        if (!status) status = 'failure';
-        if (!preference_id) preference_id = 'test_preference_789';
+        if (!redirect_uri) redirect_uri = 'home';
+        if (!source) source = 'web';
         
-        log('Parámetros finales:', { payment_id, status, preference_id });
+        log('Parámetros finales:', { redirect_uri, source });
         
         // Construir el deep link
-        const deepLink = `carica://payment/failure?payment_id=${payment_id}&status=${status}&preference_id=${preference_id}`;
+        const deepLink = `carica://login?redirect_uri=${redirect_uri}&source=${source}`;
         
         log('Deep link generado:', deepLink);
         

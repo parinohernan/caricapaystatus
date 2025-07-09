@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Deep Link - Carica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+        }
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Deep Link</h1>
+        <p>Prueba diferentes deep links para diagnosticar el problema</p>
+        
+        <button class="btn" onclick="testSimpleDeepLink()">Test Simple (carica://)</button>
+        <button class="btn" onclick="testPaymentDeepLink()">Test Payment (carica://payment)</button>
+        <button class="btn" onclick="testFailureDeepLink()">Test Failure (carica://payment/failure)</button>
+        <button class="btn" onclick="testSuccessDeepLink()">Test Success (carica://payment/success)</button>
+        <button class="btn" onclick="testPendingDeepLink()">Test Pending (carica://payment/pending)</button>
+        <button class="btn" onclick="testLoginDeepLink()">Test Login (carica://login)</button>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        function log(message, data = null) {
+            const timestamp = new Date().toISOString();
+            const logElement = document.getElementById('log');
+            const logMessage = `[${timestamp}] ${message}${data ? ' - ' + JSON.stringify(data) : ''}`;
+            console.log(logMessage);
+            logElement.innerHTML += logMessage + '<br>';
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function testDeepLink(deepLink, description) {
+            log(`Probando: ${description}`);
+            log(`Deep link: ${deepLink}`);
+            
+            try {
+                // Intentar abrir el deep link
+                window.location.href = deepLink;
+                log('Redirección iniciada');
+                
+                // Verificar después de un tiempo si la app se abrió
+                setTimeout(() => {
+                    log('Verificando si la app se abrió...');
+                }, 2000);
+                
+            } catch (error) {
+                log('Error al abrir deep link:', error.message);
+            }
+        }
+
+        function testSimpleDeepLink() {
+            testDeepLink('carica://', 'Deep link simple');
+        }
+
+        function testPaymentDeepLink() {
+            testDeepLink('carica://payment', 'Deep link payment');
+        }
+
+        function testFailureDeepLink() {
+            testDeepLink('carica://payment/failure?payment_id=test123&status=failure&preference_id=pref456', 'Deep link failure con parámetros');
+        }
+
+        function testSuccessDeepLink() {
+            testDeepLink('carica://payment/success?payment_id=test123&status=success&preference_id=pref456', 'Deep link success con parámetros');
+        }
+
+        function testPendingDeepLink() {
+            testDeepLink('carica://payment/pending?payment_id=test123&status=pending&preference_id=pref456', 'Deep link pending con parámetros');
+        }
+
+        function testLoginDeepLink() {
+            testDeepLink('carica://login?redirect_uri=home&source=web', 'Deep link login con parámetros');
+        }
+
+        // Detectar eventos de la página
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                log('Página oculta - posiblemente la app se abrió');
+            } else {
+                log('Página visible nuevamente');
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            log('Ventana perdió el foco - posiblemente la app se abrió');
+        });
+
+        window.addEventListener('focus', () => {
+            log('Ventana recuperó el foco');
+        });
+
+        // Log inicial
+        log('Página de prueba cargada');
+        log('User Agent:', navigator.userAgent);
+        log('Plataforma:', navigator.platform);
+    </script>
+</body>
+</html> 
