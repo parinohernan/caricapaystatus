@@ -1,0 +1,18 @@
+[build]
+  functions = "netlify/functions"
+  publish = "public"
+
+[[redirects]]
+  from = "/payment/success"
+  to = "/.netlify/functions/payment-success"
+  status = 200
+
+[[redirects]]
+  from = "/payment/failure"
+  to = "/.netlify/functions/payment-failure"
+  status = 200
+
+[[redirects]]
+  from = "/payment/pending"
+  to = "/.netlify/functions/payment-pending"
+  status = 200 

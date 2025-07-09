@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Exitoso - Carica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 400px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fallback {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: none;
+        }
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Pago Exitoso!</h1>
+        <p>Redirigiendo a la aplicación...</p>
+        <div class="spinner"></div>
+        
+        <div class="fallback" id="fallback">
+            <p>Si la aplicación no se abrió automáticamente:</p>
+            <a href="#" class="btn" id="openApp">Abrir Carica</a>
+        </div>
+    </div>
+
+    <script>
+        // Obtener parámetros de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const payment_id = urlParams.get('payment_id');
+        const status = urlParams.get('status');
+        const preference_id = urlParams.get('preference_id');
+        
+        // Construir el deep link
+        const deepLink = `carica://payment/success?payment_id=${payment_id || ''}&status=${status || ''}&preference_id=${preference_id || ''}`;
+        
+        // Intentar abrir la app inmediatamente
+        window.location.href = deepLink;
+        
+        // Mostrar fallback después de 3 segundos
+        setTimeout(() => {
+            document.getElementById('fallback').style.display = 'block';
+            document.getElementById('openApp').href = deepLink;
+        }, 3000);
+        
+        // Log para debugging
+        console.log('Deep link generado:', deepLink);
+        console.log('Parámetros:', { payment_id, status, preference_id });
+    </script>
+</body>
+</html> 
