@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>�� Test Deep Links Avanzado - Carica</title>
+    <title>�� Debug Deep Links - Carica</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -24,20 +24,14 @@
             text-align: center;
             color: #333;
             margin-bottom: 30px;
-            font-size: 2.5em;
         }
-        .section {
-            margin-bottom: 40px;
+        .debug-section {
+            background: #f8f9fa;
             padding: 20px;
             border-radius: 12px;
-            background: #f8f9fa;
+            margin-bottom: 20px;
             border-left: 4px solid #007bff;
         }
-        .section.success { border-left-color: #28a745; }
-        .section.failure { border-left-color: #dc3545; }
-        .section.pending { border-left-color: #ffc107; }
-        .section.processing { border-left-color: #6f42c1; }
-        
         .btn {
             display: inline-block;
             padding: 12px 24px;
@@ -51,25 +45,10 @@
             font-size: 14px;
         }
         .btn-success { background: #28a745; color: white; }
-        .btn-success:hover { background: #1e7e34; transform: translateY(-2px); }
         .btn-failure { background: #dc3545; color: white; }
-        .btn-failure:hover { background: #c82333; transform: translateY(-2px); }
         .btn-pending { background: #ffc107; color: #212529; }
-        .btn-pending:hover { background: #e0a800; transform: translateY(-2px); }
-        .btn-processing { background: #6f42c1; color: white; }
-        .btn-processing:hover { background: #5a32a3; transform: translateY(-2px); }
+        .btn-debug { background: #6f42c1; color: white; }
         
-        .code {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 12px;
-            margin: 10px 0;
-            word-break: break-all;
-            overflow-x: auto;
-        }
         .log {
             background: #1a202c;
             color: #e2e8f0;
@@ -77,83 +56,162 @@
             border-radius: 8px;
             font-family: monospace;
             font-size: 12px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
             margin-top: 20px;
         }
-        .controls {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .generate-btn {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .generate-btn:hover {
-            background: #0056b3;
-        }
-        .params-display {
-            background: #e9ecef;
+        .status {
             padding: 10px;
             border-radius: 6px;
             margin: 10px 0;
-            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        
+        .url-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>�� Test Deep Links Avanzado - Carica</h1>
+        <h1>�� Debug Deep Links - Carica</h1>
         
-        <div class="controls">
-            <button class="generate-btn" onclick="generateNewParams()">�� Generar Nuevos Parámetros</button>
-            <button class="generate-btn" onclick="clearLog()">🗑️ Limpiar Log</button>
+        <div class="debug-section">
+            <h3>📱 Estado del Dispositivo</h3>
+            <div id="device-info"></div>
         </div>
 
-        <div class="section success">
-            <h2>✅ Pago Exitoso (Approved)</h2>
-            <div class="params-display" id="success-params"></div>
-            <button class="btn btn-success" onclick="testDeepLink('success')">Probar Pago Exitoso</button>
-            <button class="btn btn-success" onclick="testDeepLink('success', true)">Probar con Parámetros Extendidos</button>
-            <div class="code" id="success-url"></div>
+        <div class="debug-section">
+            <h3>�� Pruebas Básicas</h3>
+            <p>Estas pruebas verifican si los deep links básicos funcionan:</p>
+            
+            <button class="btn btn-debug" onclick="testBasicDeepLink()">Test: carica://</button>
+            <button class="btn btn-debug" onclick="testPaymentDeepLink()">Test: carica://payment</button>
+            <button class="btn btn-debug" onclick="testSimpleSuccess()">Test: carica://payment/success</button>
+            
+            <div class="url-display" id="current-url"></div>
         </div>
 
-        <div class="section failure">
-            <h2>❌ Pago Fallido (Rejected)</h2>
-            <div class="params-display" id="failure-params"></div>
-            <button class="btn btn-failure" onclick="testDeepLink('failure')">Probar Pago Fallido</button>
-            <button class="btn btn-failure" onclick="testDeepLink('failure', true)">Probar con Parámetros Extendidos</button>
-            <div class="code" id="failure-url"></div>
+        <div class="debug-section">
+            <h3>💰 Pruebas de Pago (Sin Parámetros)</h3>
+            <p>Pruebas sin parámetros para verificar el routing básico:</p>
+            
+            <button class="btn btn-success" onclick="testSuccessNoParams()">✅ Success (sin params)</button>
+            <button class="btn btn-failure" onclick="testFailureNoParams()">❌ Failure (sin params)</button>
+            <button class="btn btn-pending" onclick="testPendingNoParams()">⏳ Pending (sin params)</button>
         </div>
 
-        <div class="section pending">
-            <h2>⏳ Pago Pendiente (Pending)</h2>
-            <div class="params-display" id="pending-params"></div>
-            <button class="btn btn-pending" onclick="testDeepLink('pending')">Probar Pago Pendiente</button>
-            <button class="btn btn-pending" onclick="testDeepLink('pending', true)">Probar con Parámetros Extendidos</button>
-            <div class="code" id="pending-url"></div>
+        <div class="debug-section">
+            <h3>🔧 Pruebas con Parámetros Mínimos</h3>
+            <p>Pruebas con solo los parámetros esenciales:</p>
+            
+            <button class="btn btn-success" onclick="testSuccessMinimal()">✅ Success (mínimo)</button>
+            <button class="btn btn-failure" onclick="testFailureMinimal()">❌ Failure (mínimo)</button>
+            <button class="btn btn-pending" onclick="testPendingMinimal()">⏳ Pending (mínimo)</button>
         </div>
 
-        <div class="section processing">
-            <h2>🔄 Pago en Proceso (In Process)</h2>
-            <div class="params-display" id="processing-params"></div>
-            <button class="btn btn-processing" onclick="testDeepLink('processing')">Probar Pago en Proceso</button>
-            <button class="btn btn-processing" onclick="testDeepLink('processing', true)">Probar con Parámetros Extendidos</button>
-            <div class="code" id="processing-url"></div>
+        <div class="debug-section">
+            <h3>📊 Pruebas Completas</h3>
+            <p>Pruebas con todos los parámetros de MercadoPago:</p>
+            
+            <button class="btn btn-success" onclick="testSuccessFull()">✅ Success (completo)</button>
+            <button class="btn btn-failure" onclick="testFailureFull()">❌ Failure (completo)</button>
+            <button class="btn btn-pending" onclick="testPendingFull()">⏳ Pending (completo)</button>
         </div>
 
         <div class="log" id="log"></div>
     </div>
 
     <script>
-        // Parámetros base que simulan respuestas reales de MercadoPago
-        let currentParams = {
-            success: {
+        let testCounter = 0;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('log');
+            const logMessage = `[${timestamp}] ${message}`;
+            
+            console.log(logMessage);
+            logElement.innerHTML += `<div class="status ${type}">${logMessage}</div>`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function testDeepLink(url, description) {
+            testCounter++;
+            log(`🧪 Test #${testCounter}: ${description}`, 'warning');
+            log(`🔗 URL: ${url}`, 'info');
+            
+            document.getElementById('current-url').textContent = url;
+            
+            try {
+                // Intentar abrir el deep link
+                window.location.href = url;
+                log('✅ Redirección iniciada', 'success');
+                
+                // Verificar después de un tiempo
+                setTimeout(() => {
+                    log('🔍 Verificando si la app se abrió...', 'info');
+                }, 2000);
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Pruebas básicas
+        function testBasicDeepLink() {
+            testDeepLink('carica://', 'Deep link básico');
+        }
+
+        function testPaymentDeepLink() {
+            testDeepLink('carica://payment', 'Deep link payment');
+        }
+
+        function testSimpleSuccess() {
+            testDeepLink('carica://payment/success', 'Deep link success simple');
+        }
+
+        // Pruebas sin parámetros
+        function testSuccessNoParams() {
+            testDeepLink('carica://payment/success', 'Success sin parámetros');
+        }
+
+        function testFailureNoParams() {
+            testDeepLink('carica://payment/failure', 'Failure sin parámetros');
+        }
+
+        function testPendingNoParams() {
+            testDeepLink('carica://payment/pending', 'Pending sin parámetros');
+        }
+
+        // Pruebas con parámetros mínimos
+        function testSuccessMinimal() {
+            const url = 'carica://payment/success?payment_id=123456789&status=approved';
+            testDeepLink(url, 'Success con parámetros mínimos');
+        }
+
+        function testFailureMinimal() {
+            const url = 'carica://payment/failure?payment_id=123456789&status=rejected';
+            testDeepLink(url, 'Failure con parámetros mínimos');
+        }
+
+        function testPendingMinimal() {
+            const url = 'carica://payment/pending?payment_id=123456789&status=pending';
+            testDeepLink(url, 'Pending con parámetros mínimos');
+        }
+
+        // Pruebas completas
+        function testSuccessFull() {
+            const params = new URLSearchParams({
                 payment_id: '1234567890',
                 status: 'approved',
                 preference_id: 'pref_test_001',
@@ -161,11 +219,14 @@
                 collection_status: 'approved',
                 external_reference: 'test_ref_001',
                 payment_type: 'credit_card',
-                merchant_order_id: '1234567890',
-                processing_mode: 'aggregator',
-                merchant_account_id: 'null'
-            },
-            failure: {
+                merchant_order_id: '1234567890'
+            });
+            const url = `carica://payment/success?${params.toString()}`;
+            testDeepLink(url, 'Success con parámetros completos');
+        }
+
+        function testFailureFull() {
+            const params = new URLSearchParams({
                 payment_id: '1234567891',
                 status: 'rejected',
                 preference_id: 'pref_test_002',
@@ -173,11 +234,14 @@
                 collection_status: 'rejected',
                 external_reference: 'test_ref_002',
                 payment_type: 'credit_card',
-                merchant_order_id: '1234567891',
-                processing_mode: 'aggregator',
-                merchant_account_id: 'null'
-            },
-            pending: {
+                merchant_order_id: '1234567891'
+            });
+            const url = `carica://payment/failure?${params.toString()}`;
+            testDeepLink(url, 'Failure con parámetros completos');
+        }
+
+        function testPendingFull() {
+            const params = new URLSearchParams({
                 payment_id: '1234567892',
                 status: 'pending',
                 preference_id: 'pref_test_003',
@@ -185,138 +249,51 @@
                 collection_status: 'pending',
                 external_reference: 'test_ref_003',
                 payment_type: 'credit_card',
-                merchant_order_id: '1234567892',
-                processing_mode: 'aggregator',
-                merchant_account_id: 'null'
-            },
-            processing: {
-                payment_id: '1234567893',
-                status: 'in_process',
-                preference_id: 'pref_test_004',
-                collection_id: '1234567893',
-                collection_status: 'in_process',
-                external_reference: 'test_ref_004',
-                payment_type: 'credit_card',
-                merchant_order_id: '1234567893',
-                processing_mode: 'aggregator',
-                merchant_account_id: 'null'
-            }
-        };
-
-        function log(message, data = null) {
-            const timestamp = new Date().toLocaleTimeString();
-            const logElement = document.getElementById('log');
-            const logMessage = `[${timestamp}] ${message}${data ? ' - ' + JSON.stringify(data, null, 2) : ''}`;
-            console.log(logMessage);
-            logElement.innerHTML += logMessage + '<br>';
-            logElement.scrollTop = logElement.scrollHeight;
-        }
-
-        function generateRandomId() {
-            return Math.floor(Math.random() * 1000000000) + 1000000000;
-        }
-
-        function generateNewParams() {
-            const newId = generateRandomId();
-            const timestamp = Date.now();
-            
-            // Generar nuevos parámetros para cada estado
-            Object.keys(currentParams).forEach(status => {
-                currentParams[status] = {
-                    ...currentParams[status],
-                    payment_id: newId.toString(),
-                    collection_id: newId.toString(),
-                    merchant_order_id: newId.toString(),
-                    preference_id: `pref_test_${timestamp}`,
-                    external_reference: `test_ref_${timestamp}`,
-                };
+                merchant_order_id: '1234567892'
             });
-            
-            updateDisplay();
-            log('🔄 Nuevos parámetros generados', { newId, timestamp });
+            const url = `carica://payment/pending?${params.toString()}`;
+            testDeepLink(url, 'Pending con parámetros completos');
         }
 
-        function updateDisplay() {
-            Object.keys(currentParams).forEach(status => {
-                const params = currentParams[status];
-                const paramsDisplay = document.getElementById(`${status}-params`);
-                const urlDisplay = document.getElementById(`${status}-url`);
-                
-                // Mostrar parámetros
-                paramsDisplay.innerHTML = `
-                    <strong>Parámetros:</strong><br>
-                    Payment ID: ${params.payment_id}<br>
-                    Status: ${params.status}<br>
-                    Preference ID: ${params.preference_id}<br>
-                    Collection ID: ${params.collection_id}
-                `;
-                
-                // Generar URL
-                const url = `carica://payment/${status}?${new URLSearchParams(params).toString()}`;
-                urlDisplay.textContent = url;
-            });
-        }
-
-        function testDeepLink(status, extended = false) {
-            const params = currentParams[status];
-            const urlParams = extended ? params : {
-                payment_id: params.payment_id,
-                status: params.status,
-                preference_id: params.preference_id,
-                collection_id: params.collection_id
-            };
-            
-            const url = `carica://payment/${status}?${new URLSearchParams(urlParams).toString()}`;
-            
-            log(`�� Probando deep link: ${status.toUpperCase()}`, {
-                url: url,
-                extended: extended,
-                params: urlParams
-            });
-            
-            try {
-                // Intentar abrir el deep link
-                window.location.href = url;
-                log('✅ Redirección iniciada');
-                
-                // Verificar después de un tiempo
-                setTimeout(() => {
-                    log('🔍 Verificando si la app se abrió...');
-                }, 2000);
-                
-            } catch (error) {
-                log('❌ Error al abrir deep link', error.message);
-            }
-        }
-
-        function clearLog() {
-            document.getElementById('log').innerHTML = '';
-            log('🗑️ Log limpiado');
-        }
-
-        // Detectar eventos de la página
+        // Detectar eventos
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                log('📱 Página oculta - posiblemente la app se abrió');
+                log('📱 Página oculta - posiblemente la app se abrió', 'success');
             } else {
-                log('�� Página visible nuevamente');
+                log('�� Página visible nuevamente', 'info');
             }
         });
 
         window.addEventListener('blur', () => {
-            log('🔍 Ventana perdió el foco - posiblemente la app se abrió');
+            log('🔍 Ventana perdió el foco - posiblemente la app se abrió', 'success');
         });
 
         window.addEventListener('focus', () => {
-            log('🎯 Ventana recuperó el foco');
+            log('🎯 Ventana recuperó el foco', 'info');
         });
 
+        // Mostrar información del dispositivo
+        function showDeviceInfo() {
+            const deviceInfo = document.getElementById('device-info');
+            deviceInfo.innerHTML = `
+                <div class="status info">
+                    <strong>📱 Información del Dispositivo:</strong><br>
+                    User Agent: ${navigator.userAgent}<br>
+                    Plataforma: ${navigator.platform}<br>
+                    Resolución: ${window.screen.width}x${window.screen.height}<br>
+                    URL actual: ${window.location.href}
+                </div>
+            `;
+        }
+
         // Inicializar
-        updateDisplay();
-        log('🚀 Página de prueba cargada');
-        log('📱 User Agent:', navigator.userAgent);
-        log('💻 Plataforma:', navigator.platform);
-        log('📏 Resolución:', `${window.screen.width}x${window.screen.height}`);
+        showDeviceInfo();
+        log('🚀 Página de debug cargada', 'success');
+        log('�� Instrucciones:', 'info');
+        log('1. Haz clic en las pruebas en orden (básicas → sin params → mínimas → completas)', 'info');
+        log('2. Observa si la app se abre y a qué pantalla va', 'info');
+        log('3. Si la app se abre pero queda en blanco, el problema está en el routing', 'warning');
+        log('4. Si la app no se abre, el problema está en la configuración de deep links', 'warning');
     </script>
 </body>
 </html>
