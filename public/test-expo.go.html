@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test Deep Links - Expo Go</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 8px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn-failure { background: #dc3545; color: white; }
+        .btn-pending { background: #ffc107; color: #212529; }
+        
+        .url-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Deep Links - Expo Go</h1>
+        
+        <div class="instructions">
+            <h3>�� Instrucciones para Expo Go:</h3>
+            <ol>
+                <li>Ejecuta <code>npx expo start</code> en tu terminal</li>
+                <li>Escanea el QR con Expo Go</li>
+                <li>Reemplaza <code>192.168.1.100:8081</code> con tu IP local</li>
+                <li>Haz clic en los enlaces de abajo</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h3>✅ Pago Exitoso</h3>
+            <button class="btn btn-success" onclick="testExpoDeepLink('success')">Probar Success</button>
+            <div class="url-display" id="success-url"></div>
+        </div>
+
+        <div class="section">
+            <h3>❌ Pago Fallido</h3>
+            <button class="btn btn-failure" onclick="testExpoDeepLink('failure')">Probar Failure</button>
+            <div class="url-display" id="failure-url"></div>
+        </div>
+
+        <div class="section">
+            <h3>⏳ Pago Pendiente</h3>
+            <button class="btn btn-pending" onclick="testExpoDeepLink('pending')">Probar Pending</button>
+            <div class="url-display" id="pending-url"></div>
+        </div>
+    </div>
+
+    <script>
+        // Reemplaza con tu IP local
+        const EXPO_IP = '192.168.1.100:8081'; // Cambia esto por tu IP
+        
+        function testExpoDeepLink(status) {
+            const params = new URLSearchParams({
+                payment_id: '1234567890',
+                status: status === 'success' ? 'approved' : status === 'failure' ? 'rejected' : 'pending',
+                preference_id: 'pref_test_001',
+                collection_id: '1234567890',
+                collection_status: status === 'success' ? 'approved' : status === 'failure' ? 'rejected' : 'pending',
+                external_reference: 'test_ref_001',
+                payment_type: 'credit_card',
+                merchant_order_id: '1234567890'
+            });
+            
+            const url = `exp://${EXPO_IP}/--/payment/${status}?${params.toString()}`;
+            
+            // Mostrar la URL
+            document.getElementById(`${status}-url`).textContent = url;
+            
+            // Abrir el deep link
+            window.location.href = url;
+            
+            console.log('�� Probando deep link:', url);
+        }
+        
+        // Mostrar URLs iniciales
+        testExpoDeepLink('success');
+        testExpoDeepLink('failure');
+        testExpoDeepLink('pending');
+    </script>
+</body>
+</html>
