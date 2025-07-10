@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧪 Test Deep Links - Expo Go</title>
+    <title>🧪 Test Deep Links - Solo App Abierta</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -48,54 +48,56 @@
         .btn-failure { background: #dc3545; color: white; }
         .btn-pending { background: #ffc107; color: #212529; }
         
-        .url-display {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 10px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 11px;
-            word-break: break-all;
-            margin: 10px 0;
-        }
         .instructions {
             background: #e3f2fd;
             padding: 20px;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧪 Test Deep Links - Expo Go</h1>
+        <h1>🧪 Test Deep Links - Solo App Abierta</h1>
         
+        <div class="warning">
+            <h3>⚠️ IMPORTANTE:</h3>
+            <p>1. Primero abre la app Carica en Expo Go</p>
+            <p>2. Luego haz clic en los enlaces de abajo</p>
+            <p>3. Los deep links solo funcionan cuando la app ya está abierta</p>
+        </div>
+
         <div class="instructions">
-            <h3>�� Instrucciones para Expo Go:</h3>
+            <h3>�� Instrucciones:</h3>
             <ol>
                 <li>Ejecuta <code>npx expo start</code> en tu terminal</li>
                 <li>Escanea el QR con Expo Go</li>
-                <li>Reemplaza <code>192.168.1.116:8081</code> con tu IP local</li>
+                <li>Deja la app abierta</li>
                 <li>Haz clic en los enlaces de abajo</li>
+                <li>La app debería navegar a la pantalla correspondiente</li>
             </ol>
         </div>
 
         <div class="section">
             <h3>✅ Pago Exitoso</h3>
-            <button class="btn btn-success" onclick="testExpoDeepLink('success')">Probar Success</button>
-            <div class="url-display" id="success-url"></div>
+            <button class="btn btn-success" onclick="testDeepLink('success')">Probar Success</button>
         </div>
 
         <div class="section">
             <h3>❌ Pago Fallido</h3>
-            <button class="btn btn-failure" onclick="testExpoDeepLink('failure')">Probar Failure</button>
-            <div class="url-display" id="failure-url"></div>
+            <button class="btn btn-failure" onclick="testDeepLink('failure')">Probar Failure</button>
         </div>
 
         <div class="section">
             <h3>⏳ Pago Pendiente</h3>
-            <button class="btn btn-pending" onclick="testExpoDeepLink('pending')">Probar Pending</button>
-            <div class="url-display" id="pending-url"></div>
+            <button class="btn btn-pending" onclick="testDeepLink('pending')">Probar Pending</button>
         </div>
     </div>
 
@@ -103,7 +105,7 @@
         // Reemplaza con tu IP local
         const EXPO_IP = '192.168.1.116:8081'; // Cambia esto por tu IP
         
-        function testExpoDeepLink(status) {
+        function testDeepLink(status) {
             const params = new URLSearchParams({
                 payment_id: '1234567890',
                 status: status === 'success' ? 'approved' : status === 'failure' ? 'rejected' : 'pending',
@@ -117,19 +119,11 @@
             
             const url = `exp://${EXPO_IP}/--/payment/${status}?${params.toString()}`;
             
-            // Mostrar la URL
-            document.getElementById(`${status}-url`).textContent = url;
+            console.log('�� Probando deep link:', url);
             
             // Abrir el deep link
             window.location.href = url;
-            
-            console.log('�� Probando deep link:', url);
         }
-        
-        // Mostrar URLs iniciales
-        testExpoDeepLink('success');
-        testExpoDeepLink('failure');
-        testExpoDeepLink('pending');
     </script>
 </body>
 </html>
