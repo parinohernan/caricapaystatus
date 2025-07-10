@@ -83,7 +83,9 @@
         if (!preference_id) preference_id = 'test_preference_789';
         
         // Construir el deep link
-        const deepLink = `carica://payment/success?payment_id=${payment_id}&status=${status}&preference_id=${preference_id}`;
+        const deepLink = `carica://payment/success?payment_id=${payment_id}&status=${status}&preference_id=${preference_id}&collection_id=1234567890&collection_status=approved&external_reference=test_ref_001&payment_type=credit_card&merchant_order_id=1234567890`;
+        console.log("deepLink hardcodeado", deepLink);
+        // `carica://payment/success?payment_id=${payment_id}&status=${status}&preference_id=${preference_id}`;
         
         // Intentar abrir la app inmediatamente
         window.location.href = deepLink;
